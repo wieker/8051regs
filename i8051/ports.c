@@ -112,8 +112,7 @@ void process(char* command, int size) {
     case 'P':
         return;
     case 'D':
-        IOA = 0xff;
-        IOD = 0xaa;
+        IOD = 0x01;
         return;
     case 'S':
         initSlaveFIFO();
