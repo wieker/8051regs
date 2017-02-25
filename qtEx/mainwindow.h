@@ -31,6 +31,10 @@ private slots:
 
     void on_sendOtherPkt_clicked();
 
+    void on_toggleSlave_clicked();
+
+    void on_drawButton_clicked();
+
 private:
     FX2Pipe* p;
     Ui::MainWindow *ui;

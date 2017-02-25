@@ -36,10 +36,33 @@ void initDefaultPortSetup() {
 }
 
 void initSlaveFIFO() {
+    CPUCS = 0x12;
+
+    EP6FIFOCFG = 0x08;  SYNCDELAY;
+    EP2FIFOCFG = 0x00;  SYNCDELAY;
+    EP4FIFOCFG = 0x00;  SYNCDELAY;
+    EP8FIFOCFG = 0x00;  SYNCDELAY;
+
     FIFOPINPOLAR=0x1f;  SYNCDELAY;
+
     IFCONFIG = 0x03;  SYNCDELAY;
     REVCTL = 0x03;    SYNCDELAY;
+
+    EP6CFG = 0xe0;  SYNCDELAY;
+
+    FIFORESET = 0x80;  SYNCDELAY;
+    FIFORESET = 0x82;  SYNCDELAY;
+    FIFORESET = 0x84;  SYNCDELAY;
+    FIFORESET = 0x86;  SYNCDELAY;
+    FIFORESET = 0x88;  SYNCDELAY;
+    FIFORESET = 0x00;  SYNCDELAY;
+
     PORTACFG = 0x00;  SYNCDELAY;
+
+    EP6AUTOINLENH = 0x02; SYNCDELAY;
+    EP6AUTOINLENL = 0x00; SYNCDELAY;
+
+    IOA=0x02;
 }
 
 void initEP2AsInput(int cpuProcessing) {
@@ -49,7 +72,11 @@ void initEP2AsInput(int cpuProcessing) {
 
 void initEP6AsOutput(int cpuProcessing) {
     EP6CFG = 0xe0;  SYNCDELAY;
-    EP6FIFOCFG = 0x00 | (!cpuProcessing << 3);  SYNCDELAY;
+    if (cpuProcessing) {
+        EP6FIFOCFG = 0x00;  SYNCDELAY;
+    } else {
+        EP6FIFOCFG = 0x08;  SYNCDELAY;
+    }
 
     EP6AUTOINLENH = 0x02; SYNCDELAY;
     EP6AUTOINLENL = 0x00; SYNCDELAY;
@@ -60,7 +87,7 @@ void discardInAsCPUProcessed() {
 }
 
 void finishCPUOutput(int discardOrSendToPC) {
-    INPKTEND=0x06 | (discardOrSendToPC << 7);   SYNCDELAY;;
+    SYNCDELAY;  INPKTEND=0x06 | (discardOrSendToPC << 7);
 }
 
 void sendToPCPartialPkt(int len) {
@@ -99,6 +126,21 @@ void sendPacket(unsigned char* src, unsigned int size) {
     sendToPCPartialPkt(size);
 }
 
+void process(char* command, int size) {
+    switch (*command) {
+    case 'P':
+        return;
+    case 'D':
+        IOA = 0xff;
+        IOD = 0xaa;
+        return;
+    case 'S':
+        initSlaveFIFO();
+        //initEP6AsOutput(0);
+        return;
+    }
+}
+
 void main()
 {
     char inbuf[10];
@@ -109,7 +151,6 @@ void main()
     initEP2AsInput(1);
     initEP6AsOutput(1);
     initIOASOut();
-    clearFIFO();
 
     for(;;) {
         if (isInputNotEmpty()) {
@@ -121,6 +162,7 @@ void main()
             while (!isOutputNotFull()) { }
             sendPacket(outbuf, 4);
             k ++;
+            process(inbuf, len);
         }
 
         i ++;

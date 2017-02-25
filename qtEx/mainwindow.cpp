@@ -66,17 +66,22 @@ unsigned char cvtToBin(char hex) {
     }
 }
 
-void MainWindow::on_pushButton_11_clicked()
-{
-    glWidget->update();
-}
-
 void MainWindow::on_sendPktButton_clicked()
 {
-    submitCommandWithLength("CMDALALA", 8);
+    submitCommandWithLength("PING", 4);
 }
 
 void MainWindow::on_sendOtherPkt_clicked()
 {
-    submitCommandWithLength("XFER2", 5);
+    submitCommandWithLength("DPORTAA", 7);
+}
+
+void MainWindow::on_toggleSlave_clicked()
+{
+    submitCommandWithLength("SLAVE", 5);
+}
+
+void MainWindow::on_drawButton_clicked()
+{
+    glWidget->update();
 }
