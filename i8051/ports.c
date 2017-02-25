@@ -32,6 +32,8 @@ void initDefaultPortSetup() {
 
     EP4FIFOCFG = 0x00;  SYNCDELAY;
     EP8FIFOCFG = 0x00;  SYNCDELAY;
+
+    IOA=0x01;
 }
 
 void initSlaveFIFO() {
