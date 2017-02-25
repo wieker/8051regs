@@ -9,7 +9,7 @@ static void initIOASOut(void)
 {
     OED = 0xff;
     IOD = 0x00;
-    OEA = 0xff;
+    OEA = 0x03;
     IOA = 0x01;
     OEB = 0xff;
     IOB = 0x00;
@@ -126,12 +126,13 @@ void process(char* command, int size) {
         return;
     case 'S':
         initSlaveFIFO();
-        for (gg = 0; gg < 40; gg ++) {
-            IOD = i;
-            for (p = 0; p < 120; p ++)
+        for (gg = 0; gg < 2000; gg ++) {
+            IOD = 0xAA;
+            for (p = 0; p < 1200; p ++)
                         ;
             i += 64;
         }
+        IOD = 0x00;
         initDefaultPortSetup();
         initEP6AsOutput(1);
         return;
