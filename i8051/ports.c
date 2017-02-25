@@ -7,6 +7,8 @@
 
 void discardInAsCPUProcessed();
 
+int mode;
+
 static void initIOASOut(void)
 {
 
@@ -35,6 +37,8 @@ void initDefaultPortSetup() {
 
     EP4FIFOCFG = 0x00;  SYNCDELAY;
     EP8FIFOCFG = 0x00;  SYNCDELAY;
+
+    mode = 0;
 }
 
 void initSlaveFIFO() {
@@ -42,6 +46,8 @@ void initSlaveFIFO() {
     IFCONFIG = 0x03;  SYNCDELAY;
     REVCTL = 0x03;    SYNCDELAY;
     PORTACFG = 0x00;  SYNCDELAY;
+
+    mode = 1;
 }
 
 void initEP2AsInput(int cpuProcessing) {
@@ -62,7 +68,11 @@ void initEP6AsOutput(int cpuProcessing) {
 }
 
 void discardInAsCPUProcessed() {
-    OUTPKTEND=0x82;   SYNCDELAY;
+    if (mode == 0) {
+        EP2BCL=0x80;  SYNCDELAY;
+    } else if (mode == 1) {
+        OUTPKTEND=0x82;   SYNCDELAY;
+    }
 }
 
 void finishCPUOutput(int discardOrSendToPC) {
@@ -92,6 +102,7 @@ int receivePacket(unsigned char* dest, unsigned int size) {
     }
 
     discardInAsCPUProcessed();
+    return len;
 }
 
 void sendPacket(unsigned char* src, unsigned int size) {
