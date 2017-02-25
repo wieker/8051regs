@@ -103,6 +103,10 @@ int receivePacket(unsigned char* dest, unsigned int size) {
     }
 
     discardInAsCPUProcessed();
+    discardInAsCPUProcessed();
+    discardInAsCPUProcessed();
+    discardInAsCPUProcessed();
+    discardInAsCPUProcessed();
     return len;
 }
 
@@ -130,8 +134,12 @@ void main()
     for(;;) {
         if (isInputNotEmpty()) {
             int len = receivePacket(inbuf, 10);
+            outbuf[0] = 'S';
+            outbuf[1] = len & 0xff;
+            outbuf[2] = inbuf[0];
+            outbuf[3] = inbuf[1];
             while (!isOutputNotFull()) { }
-            sendPacket(inbuf, 4);
+            sendPacket(outbuf, 4);
             k ++;
         }
 

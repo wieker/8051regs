@@ -75,3 +75,8 @@ void MainWindow::on_sendPktButton_clicked()
 {
     submitCommandWithLength("CMDALALA", 8);
 }
+
+void MainWindow::on_sendOtherPkt_clicked()
+{
+    submitCommandWithLength("XFER2", 5);
+}
