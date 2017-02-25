@@ -5,10 +5,6 @@
 #define	SYNCDELAY	NOP; NOP; NOP; NOP
 #define SYNCDELAY3 {SYNCDELAY;SYNCDELAY;SYNCDELAY;}
 
-void discardInAsCPUProcessed();
-
-int mode;
-
 static void initIOASOut(void)
 {
 
@@ -37,8 +33,6 @@ void initDefaultPortSetup() {
 
     EP4FIFOCFG = 0x00;  SYNCDELAY;
     EP8FIFOCFG = 0x00;  SYNCDELAY;
-
-    mode = 0;
 }
 
 void initSlaveFIFO() {
@@ -46,17 +40,11 @@ void initSlaveFIFO() {
     IFCONFIG = 0x03;  SYNCDELAY;
     REVCTL = 0x03;    SYNCDELAY;
     PORTACFG = 0x00;  SYNCDELAY;
-
-    mode = 1;
 }
 
 void initEP2AsInput(int cpuProcessing) {
     EP2CFG = 0xa2;  SYNCDELAY;
     EP2FIFOCFG = 0x00 | (!cpuProcessing << 4);  SYNCDELAY;
-    discardInAsCPUProcessed();
-    discardInAsCPUProcessed();
-    discardInAsCPUProcessed();
-    discardInAsCPUProcessed();
 }
 
 void initEP6AsOutput(int cpuProcessing) {
@@ -68,12 +56,7 @@ void initEP6AsOutput(int cpuProcessing) {
 }
 
 void discardInAsCPUProcessed() {
-    if (mode == 0) {
-        EP2BCL=0x82;  SYNCDELAY;
-        OUTPKTEND=0x82;   SYNCDELAY;
-    } else if (mode == 1) {
-        OUTPKTEND=0x82;   SYNCDELAY;
-    }
+    SYNCDELAY;  OUTPKTEND=0x82;
 }
 
 void finishCPUOutput(int discardOrSendToPC) {
