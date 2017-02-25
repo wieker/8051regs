@@ -13,7 +13,7 @@ void MyWidget::_update(unsigned char *b, int q_size) {
         if (cpos >= 1280 * 1024) {
             cpos = 0;
         }
-        buf[cpos ++] = b[i] << 4;
+        buf[cpos ++] = b[i];
     }
     updated ++;
     if (updated > 70) {
