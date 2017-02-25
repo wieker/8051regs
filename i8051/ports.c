@@ -7,7 +7,7 @@
 
 static void initIOASOut(void)
 {
-    OED = 0x7f;
+    OED = 0xAA;
     IOD = 0x00;
     OEA = 0x03;
     IOA = 0x01;
@@ -117,7 +117,7 @@ void process(char* command, int size) {
     case 'P':
         return;
     case 'D':
-        for (gg = 0; gg < 10; gg ++) {
+        for (gg = 0; gg < 1000; gg ++) {
             IOD = i;
             for (p = 0; p < 120; p ++)
                         ;
@@ -128,13 +128,13 @@ void process(char* command, int size) {
         return;
     case 'S':
         initSlaveFIFO();
-        IOD = 0xAA;
-        for (gg = 0; gg < 10; gg++) {
-            while (!(IOD & 0x80)) {
-                IOD = 0xAA | (IOD >> 7 << 6);
+        IOD = 0xA0;
+        for (gg = 0; gg < 1000; gg++) {
+            while (!(IOD & 0x01)) {
+                IOD = 0xA0;
             }
-            while (IOD & 0x80) {
-                IOD = 0xAA | (IOD >> 7 << 6);
+            while (IOD & 0x01) {
+                IOD = 0xA2;
             }
         }
         IOD = 0x00;
