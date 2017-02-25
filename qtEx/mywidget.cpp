@@ -29,7 +29,7 @@ void MyWidget::paintEvent(QPaintEvent *) {
     int pos = 0;
     for (int i = 0; i < 1024; i ++) {
         for (int j = 0; j < 1280; j ++) {
-            image.setPixel(j, i, qRgba(buf[pos] * 5, (int) buf[pos] * 5, (int) buf[pos] * 5, 0));
+            image.setPixel(j, i, qRgba(buf[pos], (int) buf[pos], (int) buf[pos], 0));
             if (pos < 100) (std::cout << std::hex) << (int) buf[pos];
             if (pos < 100) std::cout << " ";
             pos ++;

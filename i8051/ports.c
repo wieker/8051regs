@@ -114,7 +114,7 @@ void process(char* command, int size) {
         return;
     case 'D':
         for (;;) {
-            i += 3;
+            i += 1;
             IOD = i;
         }
         return;
