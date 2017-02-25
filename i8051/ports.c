@@ -51,7 +51,7 @@ void initSlaveFIFO() {
 }
 
 void initEP2AsInput(int cpuProcessing) {
-    EP2CFG = 0xa0;  SYNCDELAY;
+    EP2CFG = 0xa2;  SYNCDELAY;
     EP2FIFOCFG = 0x00 | (!cpuProcessing << 4);  SYNCDELAY;
     discardInAsCPUProcessed();
     discardInAsCPUProcessed();
@@ -69,7 +69,8 @@ void initEP6AsOutput(int cpuProcessing) {
 
 void discardInAsCPUProcessed() {
     if (mode == 0) {
-        EP2BCL=0x80;  SYNCDELAY;
+        EP2BCL=0x82;  SYNCDELAY;
+        OUTPKTEND=0x82;   SYNCDELAY;
     } else if (mode == 1) {
         OUTPKTEND=0x82;   SYNCDELAY;
     }
@@ -118,7 +119,7 @@ void sendPacket(unsigned char* src, unsigned int size) {
 void main()
 {
     char inbuf[10];
-    int i, j, c = 0, k = 0;
+    int i = 0, j = 0, c = 0, k = 0;
     char outbuf[10];
 
     initDefaultPortSetup();
@@ -132,15 +133,22 @@ void main()
             while (!isOutputNotFull()) { }
             sendPacket(inbuf, 4);
             k ++;
-        } else {
-            for (j = 0; j < 1000; j ++)
-            for (i = 0; i < 16000; i ++) { }
+        }
+
+        i ++;
+        if (i == 160) {
+            i = 0;
+            j ++;
+        }
+        if (j == 1000) {
             outbuf[0] = 'S';
             outbuf[1] = EP2CS;
             outbuf[2] = c & 0xff;
             outbuf[3] = k & 0xff;
+            while (!isOutputNotFull()) { }
             sendPacket(outbuf, 4);
             c ++;
+            j = 0;
         }
     }
 }
