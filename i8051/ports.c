@@ -108,11 +108,15 @@ void sendPacket(unsigned char* src, unsigned int size) {
 }
 
 void process(char* command, int size) {
+    unsigned char i = 0;
     switch (*command) {
     case 'P':
         return;
     case 'D':
-        IOD = 0x01;
+        for (;;) {
+            i += 3;
+            IOD = i;
+        }
         return;
     case 'S':
         initSlaveFIFO();
