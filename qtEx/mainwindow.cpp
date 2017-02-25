@@ -73,5 +73,5 @@ void MainWindow::on_pushButton_11_clicked()
 
 void MainWindow::on_sendPktButton_clicked()
 {
-    submitCommandWithLength("CMD", 3);
+    submitCommandWithLength("CMDALALA", 8);
 }

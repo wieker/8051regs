@@ -5,6 +5,8 @@
 #define	SYNCDELAY	NOP; NOP; NOP; NOP
 #define SYNCDELAY3 {SYNCDELAY;SYNCDELAY;SYNCDELAY;}
 
+void discardInAsCPUProcessed();
+
 static void initIOASOut(void)
 {
 
@@ -45,6 +47,10 @@ void initSlaveFIFO() {
 void initEP2AsInput(int cpuProcessing) {
     EP2CFG = 0xa0;  SYNCDELAY;
     EP2FIFOCFG = 0x00 | (!cpuProcessing << 4);  SYNCDELAY;
+    discardInAsCPUProcessed();
+    discardInAsCPUProcessed();
+    discardInAsCPUProcessed();
+    discardInAsCPUProcessed();
 }
 
 void initEP6AsOutput(int cpuProcessing) {
@@ -60,7 +66,7 @@ void discardInAsCPUProcessed() {
 }
 
 void finishCPUOutput(int discardOrSendToPC) {
-    OUTPKTEND=0x06 | (discardOrSendToPC << 7);   SYNCDELAY;;
+    INPKTEND=0x06 | (discardOrSendToPC << 7);   SYNCDELAY;;
 }
 
 void sendToPCPartialPkt(int len) {
@@ -72,7 +78,7 @@ int isInputNotEmpty() {
     return !(EP2CS & (1<<2));
 }
 
-int isOutputNotEmpty() {
+int isOutputNotFull() {
     return !(EP6CS & (1<<3));
 }
 
@@ -101,7 +107,8 @@ void sendPacket(unsigned char* src, unsigned int size) {
 void main()
 {
     char inbuf[10];
-    int i, j;
+    int i, j, c = 0, k = 0;
+    char outbuf[10];
 
     initDefaultPortSetup();
     initEP2AsInput(1);
@@ -110,12 +117,18 @@ void main()
     for(;;) {
         if (isInputNotEmpty()) {
             int len = receivePacket(inbuf, 10);
-            while (isOutputNotEmpty()) { }
-            sendPacket("OKOK", 4);
+            while (!isOutputNotFull()) { }
+            sendPacket(inbuf, 4);
+            k ++;
         } else {
             for (j = 0; j < 1000; j ++)
             for (i = 0; i < 16000; i ++) { }
-            sendPacket("BADS", 4);
+            outbuf[0] = 'S';
+            outbuf[1] = EP2CS;
+            outbuf[2] = c & 0xff;
+            outbuf[3] = k & 0xff;
+            sendPacket(outbuf, 4);
+            c ++;
         }
     }
 }
