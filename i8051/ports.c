@@ -102,7 +102,7 @@ int receivePacket(unsigned char* dest, unsigned int size) {
         dest[i] = *src;
     }
 
-    discardInAsCPUProcessed();
+    SYNCDELAY;  OUTPKTEND=0x82;
     return len;
 }
 
