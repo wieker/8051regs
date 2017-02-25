@@ -5,7 +5,7 @@
 #define	SYNCDELAY	NOP; NOP; NOP; NOP
 #define SYNCDELAY3 {SYNCDELAY;SYNCDELAY;SYNCDELAY;}
 
-static void Initialize(void)
+static void initIOASOut(void)
 {
 
     OED = 0xff;
@@ -14,8 +14,9 @@ static void Initialize(void)
     IOA = 0x00;
     OEB = 0xff;
     IOB = 0x00;
+}
 
-
+void clearFIFO() {
     FIFORESET = 0x80;  SYNCDELAY;
     FIFORESET = 0x82;  SYNCDELAY;
     FIFORESET = 0x84;  SYNCDELAY;
@@ -24,7 +25,7 @@ static void Initialize(void)
     FIFORESET = 0x00;  SYNCDELAY;
 }
 
-void initDefault() {
+void initDefaultPortSetup() {
     CPUCS = 0x12;
 
     IFCONFIG = 0xc0;  SYNCDELAY;
@@ -35,34 +36,75 @@ void initDefault() {
 }
 
 void initSlaveFIFO() {
-    ;
+    FIFOPINPOLAR=0x1f;  SYNCDELAY;
+    IFCONFIG = 0x03;  SYNCDELAY;
+    REVCTL = 0x03;    SYNCDELAY;
+    PORTACFG = 0x00;  SYNCDELAY;
 }
 
 void initEP2AsInput(int cpuProcessing) {
     EP2CFG = 0xa0;  SYNCDELAY;
-    EP2FIFOCFG = 0x00;  SYNCDELAY;
+    EP2FIFOCFG = 0x00 | (!cpuProcessing << 4);  SYNCDELAY;
 }
 
 void initEP6AsOutput(int cpuProcessing) {
     EP6CFG = 0xe0;  SYNCDELAY;
-    EP6FIFOCFG = 0x00;  SYNCDELAY;
+    EP6FIFOCFG = 0x00 | (!cpuProcessing << 3);  SYNCDELAY;
+
+    EP6AUTOINLENH = 0x02; SYNCDELAY;
+    EP6AUTOINLENL = 0x00; SYNCDELAY;
 }
 
 void discardInAsCPUProcessed() {
-    ;
+    OUTPKTEND=0x82;   SYNCDELAY;
 }
 
 void finishCPUOutput(int discardOrSendToPC) {
-    ;
+    OUTPKTEND=0x06 | (discardOrSendToPC << 7);   SYNCDELAY;;
 }
 
 void sendToPCPartialPkt(int len) {
-    ;
+    EP6BCH=len>>8;    SYNCDELAY;
+    EP6BCL=len&0xff;  SYNCDELAY;
+}
+
+int isInputNotEmpty() {
+    return !(EP2CS & (1<<2));
+}
+
+int receivePacket(unsigned char* dest, unsigned int size) {
+    xdata const unsigned char *src=EP2FIFOBUF;
+    unsigned int len = ((int)EP2BCH)<<8 | EP2BCL;
+    unsigned int i;
+    for(i=0; i<len && i < size; i++,src++)
+    {
+        dest[i] = *src;
+    }
+
+    discardInAsCPUProcessed();
+}
+
+void sendPacket(unsigned char* src, unsigned int size) {
+    xdata unsigned char *dest=EP6FIFOBUF;
+    unsigned int i;
+    for(i=0; i < size; i++,dest++,src++)
+    {
+        *dest = *src;
+    }
+    sendToPCPartialPkt(size);
 }
 
 void main()
 {
-    Initialize();
+    char inbuf[10];
+    initDefaultPortSetup();
+    initEP2AsInput(1);
+    initEP6AsOutput(1);
 
-    for(;;) {}
+    for(;;) {
+        if (isInputNotEmpty()) {
+            int len = receivePacket(inbuf, 10);
+            sendPacket("OKOK", 4);
+        }
+    }
 }

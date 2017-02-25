@@ -27,6 +27,8 @@ private slots:
 
     void on_pushButton_11_clicked();
 
+    void on_sendPktButton_clicked();
+
 private:
     FX2Pipe* p;
     Ui::MainWindow *ui;

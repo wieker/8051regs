@@ -47,4 +47,5 @@ DISTFILES += \
     hexdump
 
 OTHER_FILES += \
-    pbavr/build.sh
+    pbavr/build.sh \
+    ../i8051/*.c

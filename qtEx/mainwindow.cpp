@@ -70,3 +70,8 @@ void MainWindow::on_pushButton_11_clicked()
 {
     glWidget->update();
 }
+
+void MainWindow::on_sendPktButton_clicked()
+{
+    submitCommandWithLength("CMD", 3);
+}
