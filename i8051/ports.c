@@ -72,6 +72,10 @@ int isInputNotEmpty() {
     return !(EP2CS & (1<<2));
 }
 
+int isOutputNotEmpty() {
+    return !(EP6CS & (1<<3));
+}
+
 int receivePacket(unsigned char* dest, unsigned int size) {
     xdata const unsigned char *src=EP2FIFOBUF;
     unsigned int len = ((int)EP2BCH)<<8 | EP2BCL;
@@ -97,6 +101,8 @@ void sendPacket(unsigned char* src, unsigned int size) {
 void main()
 {
     char inbuf[10];
+    int i, j;
+
     initDefaultPortSetup();
     initEP2AsInput(1);
     initEP6AsOutput(1);
@@ -104,7 +110,12 @@ void main()
     for(;;) {
         if (isInputNotEmpty()) {
             int len = receivePacket(inbuf, 10);
+            while (isOutputNotEmpty()) { }
             sendPacket("OKOK", 4);
+        } else {
+            for (j = 0; j < 1000; j ++)
+            for (i = 0; i < 16000; i ++) { }
+            sendPacket("BADS", 4);
         }
     }
 }
