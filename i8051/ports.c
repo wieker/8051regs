@@ -15,7 +15,7 @@ static void initIOASOut(void)
     OED = 0xff;
     IOD = 0x00;
     OEA = 0xff;
-    IOA = 0x00;
+    IOA = 0x01;
     OEB = 0xff;
     IOB = 0x00;
 }
@@ -124,6 +124,7 @@ void main()
     initDefaultPortSetup();
     initEP2AsInput(1);
     initEP6AsOutput(1);
+    initIOASOut();
 
     for(;;) {
         if (isInputNotEmpty()) {

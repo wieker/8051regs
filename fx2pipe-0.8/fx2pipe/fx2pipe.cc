@@ -116,53 +116,9 @@ int FX2Pipe::_SubmitOneURB(unsigned char* data, size_t size)
         if (data != NULL)
         {
             u->actual_length=size;
+            u->buffer_length=u->actual_length;
             memcpy(u->buffer, data, size);
         }
-        else if(no_stdio)
-		{
-			u->actual_length=u->buffer_length;
-			memset(u->buffer,0,u->actual_length);
-			
-			//slurped_bytes+=u->buffer_length;
-		}
-		else
-		{
-			char *raw_buf=(char*)u->buffer;
-			size_t raw_size=u->buffer_length;
-			u->actual_length=0;
-			while(raw_size && !caught_sigint)
-			{
-				ssize_t rd=read(0,raw_buf,raw_size);
-				if(rd>0)
-				{
-					assert(size_t(rd)<=raw_size);
-					raw_size-=rd;
-					raw_buf+=rd;
-					u->actual_length+=rd;
-					//slurped_bytes+=rd;
-				}
-				else if(rd<0)
-				{
-					if(errno==EINTR)  continue;
-					if(errno==EAGAIN)  continue;  // <-- SHOULD NOT HAPPEN!
-					fprintf(stderr,"fx2pipe: read error: %s\n",
-						strerror(errno));
-					++x_errors;
-					
-					delete u;
-					return(1);
-				}
-				else if(!rd)
-				{
-					//fprintf(stderr,"fx2pipe: EOF on stdin\n");
-					stdio_eof=1;
-					break;
-				}
-			}
-			// This is to be sure that the kernel uses the correct size. 
-			// And we as well further down...
-			u->buffer_length=u->actual_length;
-		}
 	}
 	
 	if(u->buffer_length)
