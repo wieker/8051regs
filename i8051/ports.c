@@ -127,9 +127,9 @@ void process(char* command, int size) {
     case 'S':
         initSlaveFIFO();
         IOD = 0xAA;
-        for (gg = 0; gg < 500; gg ++) {
+        for (gg = 0; gg < 150; gg ++) {
             for (p = 0; p < 1200; p ++)
-                        ;
+                        IOD = 0xAA | (IOD >> 7 << 6);
         }
         for (gg = 0; gg < 80; gg++)
             while (IOD & 0x80);
