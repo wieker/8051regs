@@ -7,7 +7,6 @@
 
 static void initIOASOut(void)
 {
-
     OED = 0xff;
     IOD = 0x00;
     OEA = 0xff;
@@ -36,31 +35,13 @@ void initDefaultPortSetup() {
 }
 
 void initSlaveFIFO() {
-    CPUCS = 0x12;
-
     EP6FIFOCFG = 0x08;  SYNCDELAY;
-    EP2FIFOCFG = 0x00;  SYNCDELAY;
-    EP4FIFOCFG = 0x00;  SYNCDELAY;
-    EP8FIFOCFG = 0x00;  SYNCDELAY;
 
     FIFOPINPOLAR=0x1f;  SYNCDELAY;
+    PORTACFG = 0x00;  SYNCDELAY;
 
     IFCONFIG = 0x03;  SYNCDELAY;
     REVCTL = 0x03;    SYNCDELAY;
-
-    EP6CFG = 0xe0;  SYNCDELAY;
-
-    FIFORESET = 0x80;  SYNCDELAY;
-    FIFORESET = 0x82;  SYNCDELAY;
-    FIFORESET = 0x84;  SYNCDELAY;
-    FIFORESET = 0x86;  SYNCDELAY;
-    FIFORESET = 0x88;  SYNCDELAY;
-    FIFORESET = 0x00;  SYNCDELAY;
-
-    PORTACFG = 0x00;  SYNCDELAY;
-
-    EP6AUTOINLENH = 0x02; SYNCDELAY;
-    EP6AUTOINLENL = 0x00; SYNCDELAY;
 
     IOA=0x02;
 }
