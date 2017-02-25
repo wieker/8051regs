@@ -400,16 +400,16 @@ void main(void) {
                     writeOut(i, v);
                 }
             }
-            if (command == 'R') {
+            if (command == 'C') {
                 IOD = 0x00;
                 wait();
                 IOD = 0x08;
                 wait();
-                IOD = 0x00;
+                IOA = 0x02;
                 wait();
             }
-            if (command == 'G') {
-                IOD = 0x08;
+            if (command == 'X') {
+                IOA = 0x01;
                 wait();
             }
         }

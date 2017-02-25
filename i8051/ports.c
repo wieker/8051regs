@@ -103,10 +103,6 @@ int receivePacket(unsigned char* dest, unsigned int size) {
     }
 
     discardInAsCPUProcessed();
-    discardInAsCPUProcessed();
-    discardInAsCPUProcessed();
-    discardInAsCPUProcessed();
-    discardInAsCPUProcessed();
     return len;
 }
 
@@ -130,6 +126,7 @@ void main()
     initEP2AsInput(1);
     initEP6AsOutput(1);
     initIOASOut();
+    clearFIFO();
 
     for(;;) {
         if (isInputNotEmpty()) {
