@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QWidget>
+ #include <QMutex>
 
 class MyWidget : public QWidget
 {
@@ -10,6 +11,7 @@ class MyWidget : public QWidget
     unsigned char* buf = new unsigned char[1280 * 1024];
     int updated = 0;
     int color = 0;
+    QMutex mutex;
 
     Q_OBJECT
 public:

@@ -109,13 +109,18 @@ void sendPacket(unsigned char* src, unsigned int size) {
 
 void process(char* command, int size) {
     unsigned char i = 0;
+    int p, q, l;
     switch (*command) {
     case 'P':
         return;
     case 'D':
         for (;;) {
-            i += 1;
             IOD = i;
+            for (p = 0; p < 1000; p ++)
+                for (q = 0; q < 1000; q ++)
+                    for (l = 0; l < 5; l ++)
+                        ;
+            i += 64;
         }
         return;
     case 'S':

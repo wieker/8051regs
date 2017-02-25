@@ -8,6 +8,7 @@ MyWidget::MyWidget(QWidget *parent) : QWidget(parent)
 }
 
 void MyWidget::_update(unsigned char *b, int q_size) {
+    mutex.lock();
     for (int i = 0; i < q_size; i ++) {
         if (cpos >= 1280 * 1024) {
             cpos = 0;
@@ -19,9 +20,11 @@ void MyWidget::_update(unsigned char *b, int q_size) {
         std::cout << "70 updates done!" << std::endl;
         updated = 0;
     }
+    mutex.unlock();
 }
 
 void MyWidget::paintEvent(QPaintEvent *) {
+    mutex.lock();
     QPainter painter(this);
 
     QRectF rectangle(0.0, 0.0, 960.0, 768.0);
@@ -43,5 +46,6 @@ void MyWidget::paintEvent(QPaintEvent *) {
     painter.drawArc(rectangle, startAngle, spanAngle);
 
     color += 100;
+    mutex.unlock();
 }
 

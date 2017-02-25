@@ -25,8 +25,6 @@ private slots:
 
     void on_fwButton_clicked();
 
-    void on_pushButton_11_clicked();
-
     void on_sendPktButton_clicked();
 
     void on_sendOtherPkt_clicked();
