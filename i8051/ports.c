@@ -109,18 +109,19 @@ void sendPacket(unsigned char* src, unsigned int size) {
 
 void process(char* command, int size) {
     unsigned char i = 0;
+    int gg;
     int p, q, l;
     switch (*command) {
     case 'P':
         return;
     case 'D':
-        for (;;) {
+        for (gg = 0; gg < 10; gg ++) {
             IOD = i;
-            for (p = 0; p < 1000; p ++)
-                for (q = 0; q < 1000; q ++)
-                    for (l = 0; l < 5; l ++)
+            for (p = 0; p < 120; p ++)
                         ;
             i += 64;
+            initDefaultPortSetup();
+            initEP6AsOutput(1);
         }
         return;
     case 'S':
