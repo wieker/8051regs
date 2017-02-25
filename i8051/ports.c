@@ -120,13 +120,20 @@ void process(char* command, int size) {
             for (p = 0; p < 120; p ++)
                         ;
             i += 64;
-            initDefaultPortSetup();
-            initEP6AsOutput(1);
         }
+        initDefaultPortSetup();
+        initEP6AsOutput(1);
         return;
     case 'S':
         initSlaveFIFO();
-        //initEP6AsOutput(0);
+        for (gg = 0; gg < 40; gg ++) {
+            IOD = i;
+            for (p = 0; p < 120; p ++)
+                        ;
+            i += 64;
+        }
+        initDefaultPortSetup();
+        initEP6AsOutput(1);
         return;
     }
 }
