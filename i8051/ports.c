@@ -241,7 +241,7 @@ void initGPIFMode() {
     IOA=0x03;
 
     stop_sampling();
-    set_samplerate(4);
+    set_samplerate(24);
     start_sampling();
     IOD = 0xA0;
 
