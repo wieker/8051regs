@@ -33,6 +33,8 @@ private slots:
 
     void on_drawButton_clicked();
 
+    void on_gpifButton_clicked();
+
 private:
     FX2Pipe* p;
     Ui::MainWindow *ui;

@@ -109,6 +109,153 @@ void sendPacket(unsigned char* src, unsigned int size) {
     sendToPCPartialPkt(size);
 }
 
+void stop_sampling()
+{
+    GPIFABORT = 0xff;
+    SYNCDELAY3;
+    INPKTEND = 6;
+}
+
+void start_sampling()
+{
+    int i;
+    clearFIFO();
+
+    for (i = 0; i < 1000; i++);
+    while (!(GPIFTRIG & 0x80)) {
+    ;
+    }
+    SYNCDELAY3;
+    GPIFTCB1 = 0x28;
+    SYNCDELAY3;
+    GPIFTCB0 = 0;
+    GPIFTRIG = 6;
+}
+
+const struct samplerate_info {
+    BYTE rate;
+    BYTE wait0;
+    BYTE wait1;
+    BYTE opc0;
+    BYTE opc1;
+    BYTE out0;
+    BYTE ifcfg;
+} samplerates[] = {
+    { 48,0x80,   0, 3, 0, 0x00, 0xea },
+    { 30,0x80,   0, 3, 0, 0x00, 0xaa },
+    { 24,   1,   0, 2, 1, 0x10, 0xca },
+    { 16,   1,   1, 2, 0, 0x10, 0xca },
+    { 12,   2,   1, 2, 0, 0x10, 0xca },
+    {  8,   3,   2, 2, 0, 0x10, 0xca },
+    {  4,   6,   5, 2, 0, 0x10, 0xca },
+    {  2,  12,  11, 2, 0, 0x10, 0xca },
+    {  1,  24,  23, 2, 0, 0x10, 0xca },
+    { 50,  48,  47, 2, 0, 0x10, 0xca },
+    { 20, 120, 119, 2, 0, 0x10, 0xca },
+    { 10, 240, 239, 2, 0, 0x10, 0xca }
+};
+
+BYTE set_samplerate(BYTE rate)
+{
+    BYTE i = 0;
+    while (samplerates[i].rate != rate) {
+    i++;
+    if (i == sizeof(samplerates)/sizeof(samplerates[0]))
+        return 0;
+    }
+
+    IFCONFIG = samplerates[i].ifcfg;
+
+    AUTOPTRSETUP = 7;
+    AUTOPTRH2 = 0xE4;
+    AUTOPTRL2 = 0x00;
+
+    /* The program for low-speed, e.g. 1 MHz, is
+     * wait 24, CTL2=0, FIFO
+     * wait 23, CTL2=1
+     * jump 0, CTL2=1
+     *
+     * The program for 24 MHz is
+     * wait 1, CTL2=0, FIFO
+     * jump 0, CTL2=1
+     *
+     * The program for 30/48 MHz is:
+     * jump 0, CTL2=Z, FIFO, LOOP
+     */
+
+    EXTAUTODAT2 = samplerates[i].wait0;
+    EXTAUTODAT2 = samplerates[i].wait1;
+    EXTAUTODAT2 = 1;
+    EXTAUTODAT2 = 0;
+    EXTAUTODAT2 = 0;
+    EXTAUTODAT2 = 0;
+    EXTAUTODAT2 = 0;
+    EXTAUTODAT2 = 0;
+
+    EXTAUTODAT2 = samplerates[i].opc0;
+    EXTAUTODAT2 = samplerates[i].opc1;
+    EXTAUTODAT2 = 1;
+    EXTAUTODAT2 = 0;
+    EXTAUTODAT2 = 0;
+    EXTAUTODAT2 = 0;
+    EXTAUTODAT2 = 0;
+    EXTAUTODAT2 = 0;
+
+    EXTAUTODAT2 = samplerates[i].out0;
+    EXTAUTODAT2 = 0x11;
+    EXTAUTODAT2 = 0x11;
+    EXTAUTODAT2 = 0x00;
+    EXTAUTODAT2 = 0x00;
+    EXTAUTODAT2 = 0x00;
+    EXTAUTODAT2 = 0x00;
+    EXTAUTODAT2 = 0x00;
+
+    EXTAUTODAT2 = 0;
+    EXTAUTODAT2 = 0;
+    EXTAUTODAT2 = 0;
+    EXTAUTODAT2 = 0;
+    EXTAUTODAT2 = 0;
+    EXTAUTODAT2 = 0;
+    EXTAUTODAT2 = 0;
+    EXTAUTODAT2 = 0;
+
+    for (i = 0; i < 96; i++)
+    EXTAUTODAT2 = 0;
+    return 1;
+}
+
+void initGPIFMode() {
+    int i = 0, gg, p, q;
+    // in idle mode tristate all outputs
+    GPIFIDLECTL = 0x00;
+    GPIFCTLCFG = 0x80;
+    GPIFWFSELECT = 0x00;
+    GPIFREADYSTAT = 0x00;
+    EP6GPIFFLGSEL = 0x01;
+
+    EP6FIFOCFG = 0x00;  SYNCDELAY;
+
+    IFCONFIG = 0xc2;  SYNCDELAY;
+    REVCTL = 0x03;    SYNCDELAY;
+
+    IOA=0x03;
+
+    stop_sampling();
+    set_samplerate(1);
+    start_sampling();
+
+    for (gg = 0; gg < 1000; gg ++) {
+        for (p = 0; p < 1200; p ++)
+            for (q = 0; q < 10; q ++)
+                IOD = i ++;
+    }
+
+    stop_sampling();
+    initDefaultPortSetup();
+    initEP6AsOutput(1);
+    IOA=0x01;
+}
+
 void process(char* command, int size) {
     unsigned char i = 0;
     int gg;
@@ -129,7 +276,7 @@ void process(char* command, int size) {
     case 'S':
         initSlaveFIFO();
         IOD = 0xA0;
-        for (gg = 0; gg < 1000; gg++) {
+        for (gg = 0; gg < 1; gg++) {
             while (!(IOD & 0x01)) {
                 IOD = 0xA0;
             }
@@ -140,6 +287,9 @@ void process(char* command, int size) {
         IOD = 0x00;
         initDefaultPortSetup();
         initEP6AsOutput(1);
+        return;
+    case 'G':
+        initGPIFMode();
         return;
     }
 }

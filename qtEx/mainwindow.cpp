@@ -85,3 +85,8 @@ void MainWindow::on_drawButton_clicked()
 {
     glWidget->update();
 }
+
+void MainWindow::on_gpifButton_clicked()
+{
+    submitCommandWithLength("GPIF", 4);
+}

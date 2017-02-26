@@ -26,6 +26,7 @@ void MyWidget::_update(unsigned char *b, int q_size) {
 void MyWidget::paintEvent(QPaintEvent *) {
     mutex.lock();
     QPainter painter(this);
+    std::cout << cpos << "data length" << std::endl;
 
     QRectF rectangle(0.0, 0.0, 960.0, 768.0);
     QImage image = QImage(1280, 1024, QImage::Format_RGB32);
