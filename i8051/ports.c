@@ -277,6 +277,19 @@ BYTE initImaging()
     return 1;
 }
 
+void waitFrames(int c) {
+    int gg;
+
+    for (gg = 0; gg < c; gg++) {
+        while (!(IOD & 0x01)) {
+            IOD = 0xA0;
+        }
+        while (IOD & 0x01) {
+            IOD = 0xA2;
+        }
+    }
+}
+
 void initGPIFMode() {
     int i = 0, gg, p, q;
     // in idle mode tristate all outputs
@@ -299,10 +312,7 @@ void initGPIFMode() {
     start_sampling();
     IOD = 0xA0;
 
-    for (gg = 0; gg < 1000; gg ++) {
-        for (p = 0; p < 1200; p ++)
-            for (q = 0; q < 10; q ++);
-    }
+    waitFrames(1);
 
     IOD = 0x00;
     stop_sampling();
@@ -334,14 +344,9 @@ void process(char* command, int size) {
     case 'S':
         initSlaveFIFO();
         IOD = 0xA0;
-        for (gg = 0; gg < 1; gg++) {
-            while (!(IOD & 0x01)) {
-                IOD = 0xA0;
-            }
-            while (IOD & 0x01) {
-                IOD = 0xA2;
-            }
-        }
+
+        waitFrames(1);
+
         IOD = 0x00;
         initDefaultPortSetup();
         initEP6AsOutput(1);
