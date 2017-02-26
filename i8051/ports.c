@@ -312,7 +312,7 @@ void initGPIFMode() {
     start_sampling();
     IOD = 0xA0;
 
-    waitFrames(1);
+    waitFrames(2500);
 
     IOD = 0x00;
     stop_sampling();
