@@ -233,7 +233,7 @@ void initGPIFMode() {
     GPIFREADYSTAT = 0x00;
     EP6GPIFFLGSEL = 0x01;
 
-    EP6FIFOCFG = 0x00;  SYNCDELAY;
+    EP6FIFOCFG = 0x08;  SYNCDELAY;
 
     IFCONFIG = 0xc2;  SYNCDELAY;
     REVCTL = 0x03;    SYNCDELAY;
@@ -251,6 +251,9 @@ void initGPIFMode() {
     }
 
     stop_sampling();
+    for (i = 0; i < 4; i ++) {
+        finishCPUOutput(0);
+    }
     initDefaultPortSetup();
     initEP6AsOutput(1);
     IOA=0x01;
