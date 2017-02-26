@@ -224,6 +224,59 @@ BYTE set_samplerate(BYTE rate)
     return 1;
 }
 
+BYTE initImaging()
+{
+    int i;
+
+    AUTOPTRSETUP = 7;
+    AUTOPTRH2 = 0xE4;
+    AUTOPTRL2 = 0x00;
+
+    /* cycles or branch jump point */
+    EXTAUTODAT2 = 6;
+    EXTAUTODAT2 = 5;
+    EXTAUTODAT2 = 3;
+    EXTAUTODAT2 = 6;
+    EXTAUTODAT2 = 5;
+    EXTAUTODAT2 = 3;
+    EXTAUTODAT2 = 0;
+    EXTAUTODAT2 = 0;
+
+    /* op code */
+    EXTAUTODAT2 = 0x02; /* sample data */
+    EXTAUTODAT2 = 0x00; /* do nothing */
+    EXTAUTODAT2 = 0x01; /* branch point */
+    EXTAUTODAT2 = 0x00;
+    EXTAUTODAT2 = 0x00;
+    EXTAUTODAT2 = 0x01; /* branch point */
+    EXTAUTODAT2 = 0x00;
+    EXTAUTODAT2 = 0x00;
+
+    /* CTL state */
+    EXTAUTODAT2 = 0x10; /* clock low */
+    EXTAUTODAT2 = 0x11; /* clock up */
+    EXTAUTODAT2 = 0x11;
+    EXTAUTODAT2 = 0x32; /* clock low; set line RDY flag */
+    EXTAUTODAT2 = 0x33; /* clock up*/
+    EXTAUTODAT2 = 0x33;
+    EXTAUTODAT2 = 0x00;
+    EXTAUTODAT2 = 0x00;
+
+    /* condition RDY */
+    EXTAUTODAT2 = 0;
+    EXTAUTODAT2 = 0;
+    EXTAUTODAT2 = 0;
+    EXTAUTODAT2 = 0;
+    EXTAUTODAT2 = 0;
+    EXTAUTODAT2 = 0;
+    EXTAUTODAT2 = 0;
+    EXTAUTODAT2 = 0;
+
+    for (i = 0; i < 96; i++)
+    EXTAUTODAT2 = 0;
+    return 1;
+}
+
 void initGPIFMode() {
     int i = 0, gg, p, q;
     // in idle mode tristate all outputs
@@ -235,13 +288,14 @@ void initGPIFMode() {
 
     EP6FIFOCFG = 0x08;  SYNCDELAY;
 
-    IFCONFIG = 0xc2;  SYNCDELAY;
+    IFCONFIG = 0xca;  SYNCDELAY;
     REVCTL = 0x03;    SYNCDELAY;
 
     IOA=0x03;
 
     stop_sampling();
-    set_samplerate(24);
+    //set_samplerate(4);
+    initImaging();
     start_sampling();
     IOD = 0xA0;
 
