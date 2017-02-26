@@ -253,17 +253,17 @@ BYTE initImaging()
     EXTAUTODAT2 = 0x00;
 
     /* CTL state */
-    EXTAUTODAT2 = 0x10; /* clock low */
-    EXTAUTODAT2 = 0x11; /* clock up */
-    EXTAUTODAT2 = 0x11;
-    EXTAUTODAT2 = 0x32; /* clock low; set line RDY flag */
+    EXTAUTODAT2 = 0x30; /* clock (CTL0) low */
+    EXTAUTODAT2 = 0x31; /* clock up */
+    EXTAUTODAT2 = 0x31;
+    EXTAUTODAT2 = 0x32; /* clock low; set line CTL1 flag */
     EXTAUTODAT2 = 0x33; /* clock up*/
     EXTAUTODAT2 = 0x33;
     EXTAUTODAT2 = 0x00;
     EXTAUTODAT2 = 0x00;
 
     /* condition RDY */
-    EXTAUTODAT2 = 0;
+    EXTAUTODAT2 = 0;    /* RDY0 & RDY 0*/
     EXTAUTODAT2 = 0;
     EXTAUTODAT2 = 0;
     EXTAUTODAT2 = 0;
