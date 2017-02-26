@@ -241,15 +241,16 @@ void initGPIFMode() {
     IOA=0x03;
 
     stop_sampling();
-    set_samplerate(1);
+    set_samplerate(12);
     start_sampling();
+    IOD = 0xA0;
 
     for (gg = 0; gg < 1000; gg ++) {
         for (p = 0; p < 1200; p ++)
-            for (q = 0; q < 10; q ++)
-                IOD = i ++;
+            for (q = 0; q < 10; q ++);
     }
 
+    IOD = 0x00;
     stop_sampling();
     for (i = 0; i < 4; i ++) {
         finishCPUOutput(0);
