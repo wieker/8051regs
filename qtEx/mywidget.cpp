@@ -13,7 +13,7 @@ void MyWidget::_update(unsigned char *b, int q_size) {
         if (cpos >= 1280 * 1024) {
             cpos = 0;
         }
-        buf[cpos ++] = b[i];
+        buf[cpos ++] = b[i] << 2;
     }
     updated ++;
     if (updated > 70) {
@@ -48,5 +48,9 @@ void MyWidget::paintEvent(QPaintEvent *) {
 
     color += 100;
     mutex.unlock();
+}
+
+void MyWidget::reset() {
+    cpos = 0;
 }
 

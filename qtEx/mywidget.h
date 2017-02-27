@@ -18,6 +18,7 @@ public:
     explicit MyWidget(QWidget *parent = 0);
     void _update(unsigned char* b, int q_size);
     void paintEvent(QPaintEvent *);
+    void reset();
 
 signals:
 

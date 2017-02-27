@@ -17,8 +17,7 @@ URBProcessor::ErrorCode URBProcessor::URBNotify(URB *u) {
     if (u->actual_length == 4) {
         std::cout << std::hex << (int) ((unsigned char*)u->buffer)[0] << " " << (int) ((unsigned char*)u->buffer)[1] << " "
                   << (int) ((unsigned char*)u->buffer)[2] << " " << (int) ((unsigned char*)u->buffer)[3] << std::dec << std::endl;
-    }
-    if (u->dir() < 0) {
+    } else if (u->dir() < 0) {
         myGLView->_update((unsigned char*) u->buffer, u->actual_length);
     }
     return(ECSuccess);

@@ -23,7 +23,7 @@ void MainWindow::on_fwButton_clicked()
 {
     p = new URBProcessor(glWidget);
     p->dir = -1;
-    p->firmware_hex_path = "../qtEx/fw.ihx";
+    p->firmware_hex_path = "/home/wieker/Projects/linux/sensor//qtEx/fw.ihx";
     p->search_vid = 0x0547;
     p->search_pid = 0x1002;
     std::cout << "Connect: " + p->ConnectAndInitUSB() << std::endl;
@@ -88,5 +88,6 @@ void MainWindow::on_drawButton_clicked()
 
 void MainWindow::on_gpifButton_clicked()
 {
+    glWidget->reset();
     submitCommandWithLength("GPIF", 4);
 }
